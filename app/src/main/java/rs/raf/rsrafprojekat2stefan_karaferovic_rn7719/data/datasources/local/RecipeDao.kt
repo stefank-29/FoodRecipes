@@ -3,8 +3,7 @@ package rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.datasources.local
 import androidx.room.*
 import io.reactivex.Completable
 import io.reactivex.Observable
-import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.models.RecipeDetailsEntity
-import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.models.RecipeDetailsResponse
+import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.models.DetailsEntity
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.models.RecipeEntity
 
 @Dao
@@ -28,10 +27,10 @@ abstract class RecipeDao {
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insertRecipeDetails(ingredient: RecipeDetailsEntity): Completable
+    abstract fun insertRecipeDetails(ingredient: DetailsEntity): Completable
 
     @Query("SELECT * FROM details WHERE id == :recipeId")
-    abstract fun getRecipeDetails(recipeId: String): Observable<RecipeDetailsEntity>
+    abstract fun getRecipeDetails(recipeId: String): Observable<DetailsEntity>
 
 
 }

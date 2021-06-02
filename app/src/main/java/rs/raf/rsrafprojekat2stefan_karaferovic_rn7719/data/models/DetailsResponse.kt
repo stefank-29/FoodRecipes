@@ -3,7 +3,7 @@ package rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.models
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class RecipeDetailsResponse(
+data class DetailsResponse(
     val id: String,
     val title: String,
     val ingredients: List<String>,

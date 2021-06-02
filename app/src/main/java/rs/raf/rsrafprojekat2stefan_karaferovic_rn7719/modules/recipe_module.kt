@@ -6,10 +6,11 @@ import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.datasources.local.Rec
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.datasources.remote.RecipesService
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.repositories.RecipeRepository
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.repositories.RecipeRepositoryImpl
+import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.presentation.viewmodel.MainViewModel
 
 val recipeModule = module {
 
-    viewModel { MainViewModel(movieRepository = get()) }
+    viewModel { MainViewModel(recipeRepository = get()) }
 
     single<RecipeRepository> {
         RecipeRepositoryImpl(
@@ -19,7 +20,7 @@ val recipeModule = module {
     }
 
     // Dao
-    single { get<RecipeDataBase>().getMovieDao() }
+    single { get<RecipeDataBase>().getRecipeDao() }
 
     // Service
     single<RecipesService> { create(retrofit = get()) }
