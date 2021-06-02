@@ -4,11 +4,12 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "recipes")
-data class RecipeEntity(
+@Entity(tableName = "details")
+data class RecipeDetailsEntity(
     @PrimaryKey
     val id: String,
     val title: String,
     @ColumnInfo(name = "image_url")
     val imageUrl: String,
+    val ingredients: List<String> = listOf()
 )

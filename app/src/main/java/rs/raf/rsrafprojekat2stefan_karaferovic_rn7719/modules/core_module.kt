@@ -13,6 +13,7 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
+import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.datasources.local.RecipeDataBase
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -27,7 +28,7 @@ val coreModule = module {
 
     // Room baza podataka
     single {
-        Room.databaseBuilder(androidContext(), MovieDataBase::class.java, "MovieDb")
+        Room.databaseBuilder(androidContext(), RecipeDataBase::class.java, "RecipeDb")
             .fallbackToDestructiveMigration()
             .build()
     }
@@ -51,7 +52,7 @@ fun createRetrofit(
     httpClient: OkHttpClient
 ): Retrofit {
     return Retrofit.Builder()
-        .baseUrl("https://ghibliapi.herokuapp.com/") // obavezno slash na kraju
+        .baseUrl("https://recipesapi.herokuapp.com/api/v2/") // obavezno slash na kraju
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .addConverterFactory(MoshiConverterFactory.create(moshi).asLenient())
         .client(httpClient)

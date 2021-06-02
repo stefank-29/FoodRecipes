@@ -3,12 +3,13 @@ package rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.models
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class RecipeResponse(
+data class RecipeDetailsResponse(
+    val id: String,
+    val title: String,
+    val ingredients: List<String>,
     val imageUrl: String,
 //    val socialUrl: String,
 //    val publisher: String,
-//    val sourceUrl: String,
-    val id: String,
 //    val publishedId: String,
-    val title: String,
+//    val sourceUrl: String,
 )
