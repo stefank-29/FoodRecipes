@@ -13,8 +13,8 @@ abstract class RecipeDao {
     abstract fun insertAll(entities: List<RecipeEntity>): Completable
 
 
-    @Query("SELECT * FROM recipes")
-    abstract fun getRecipes(): Observable<List<RecipeEntity>>
+    @Query("SELECT * FROM recipes WHERE title == :title")
+    abstract fun getRecipes(title: String): Observable<List<RecipeEntity>>
 
     @Query("DELETE FROM recipes")
     abstract fun deleteAll()
