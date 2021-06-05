@@ -12,6 +12,7 @@ import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.models.Recipe
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.models.Resource
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.repositories.RecipeRepository
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.presentation.contract.MainContract
+import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.presentation.view.states.DetailsState
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.presentation.view.states.RecipeState
 import timber.log.Timber
 
@@ -22,6 +23,7 @@ class MainViewModel(
     private val subscriptions = CompositeDisposable()
 
     override val recipeState: MutableLiveData<RecipeState> = MutableLiveData()
+    override val detailsState: MutableLiveData<DetailsState> = MutableLiveData()
 
     // debounce
     private val publishSubject: PublishSubject<String> = PublishSubject.create()
@@ -66,6 +68,46 @@ class MainViewModel(
                 },
                 {
                     recipeState.value = RecipeState.Error("Error during getting data from database")
+                }
+            )
+        subscriptions.add(subscription)
+    }
+
+    override fun fetchDetails(recipeId: String) {
+        val subscription = recipeRepository
+            .fetchDetails(recipeId)
+            .startWith(Resource.Loading())
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    when (it) {
+                        is Resource.Loading -> detailsState.value = DetailsState.Loading
+                        is Resource.Success -> detailsState.value = DetailsState.DataFetched
+                        is Resource.Error -> detailsState.value =
+                            DetailsState.Error("Error during fetching data")
+                    }
+                },
+                {
+                    Timber.e(it)
+                }
+            )
+        subscriptions.add(subscription)
+    }
+
+    override fun getDetails(recipeId: String) {
+        val subscription = recipeRepository
+            .getDetails(recipeId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    detailsState.value = DetailsState.Success(it)
+                },
+                {
+                    detailsState.value =
+                        DetailsState.Error("Error during getting data from database")
+                    Timber.e(it)
                 }
             )
         subscriptions.add(subscription)

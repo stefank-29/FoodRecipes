@@ -3,9 +3,7 @@ package rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.repositories
 import io.reactivex.Observable
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.datasources.local.RecipeDao
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.datasources.remote.RecipesService
-import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.models.Recipe
-import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.models.RecipeEntity
-import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.models.Resource
+import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.models.*
 import timber.log.Timber
 
 class RecipeRepositoryImpl(
@@ -53,6 +51,37 @@ class RecipeRepositoryImpl(
                         publisher = it.publisher
                     )
                 }
+            }
+    }
+
+    override fun fetchDetails(recipeId: String): Observable<Resource<Unit>> {
+        return remoteDataSource
+            .getRecipeDetails(recipeId)
+            .doOnNext {
+                val detailsEntity = DetailsEntity(
+                    id = it.id,
+                    title = it.title,
+                    imageUrl = it.imageUrl,
+                    ingredients = it.ingredients
+                )
+                localDataSource.insertRecipeDetails(detailsEntity).blockingAwait()
+            }
+            .map {
+                Resource.Success(Unit)
+            }
+    }
+
+    override fun getDetails(recipeId: String): Observable<Details> {
+        return localDataSource
+            .getRecipeDetails(recipeId)
+            .map {
+                Details(
+                    id = it.id,
+                    title = it.title,
+                    imageUrl = it.imageUrl,
+                    ingredients = it.ingredients
+
+                )
             }
     }
 
