@@ -9,12 +9,15 @@ import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.models.RecipeEntity
 @Dao
 abstract class RecipeDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract fun insertAll(entities: List<RecipeEntity>): Completable
 
 
-    @Query("SELECT * FROM recipes WHERE title == :title")
-    abstract fun getRecipes(title: String): Observable<List<RecipeEntity>>
+//    @Query("SELECT * FROM recipes WHERE title LIKE '%' || :title || '%'")
+//    abstract fun getRecipes(title: String): Observable<List<RecipeEntity>>
+
+    @Query("SELECT * FROM recipes")
+    abstract fun getRecipes(): Observable<List<RecipeEntity>>
 
     @Query("DELETE FROM recipes")
     abstract fun deleteAll()

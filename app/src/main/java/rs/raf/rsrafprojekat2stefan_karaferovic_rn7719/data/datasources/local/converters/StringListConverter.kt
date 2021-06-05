@@ -19,7 +19,6 @@ class StringListConverter : KoinComponent {
         jsonAdapter = moshi.adapter(type)
     }
 
-    // iz liste u Json
     @TypeConverter
     fun fromList(list: List<String>?): String? {
         return list?.let {
@@ -27,11 +26,11 @@ class StringListConverter : KoinComponent {
         }
     }
 
-    // iz Json u listu
     @TypeConverter
     fun toList(json: String?): List<String>? {
         return json?.let {
             return jsonAdapter.fromJson(json)
         }
     }
+
 }

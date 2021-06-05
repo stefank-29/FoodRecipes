@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.core.view.isVisible
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.models.Category
@@ -13,6 +15,7 @@ import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.presentation.view.recycler
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.presentation.view.recycler.diff.CategoryDiffCallback
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.presentation.view.states.RecipeState
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.presentation.viewmodel.MainViewModel
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,6 +24,8 @@ class MainActivity : AppCompatActivity() {
     private val mainViewModel: MainContract.ViewModel by viewModel<MainViewModel>()
 
     private lateinit var categoryAdapter: CategoryAdapter
+
+    private lateinit var searchQuery: String
 
     private val categories: List<Category> = listOf(
         Category(
@@ -68,6 +73,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         init()
     }
@@ -76,6 +82,7 @@ class MainActivity : AppCompatActivity() {
         initView()
         initListeners()
         initRecyclers()
+        initObservers()
     }
 
     private fun initView() {
@@ -86,20 +93,40 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun initObservers() {
+        mainViewModel.recipeState.observe(this, Observer {
+            Timber.e(it.toString())
+            renderState(it) // renderujem Ui
+        })
+        // Pravimo subscription kad observablu koji je vezan za getAll iz baze
+        // Na svaku promenu tabele, obserrvable ce emitovati na onNext sve elemente
+        // koji zadovoljavaju query
+        // mainViewModel.getRecipes()  // pokrenem fetchovanje iz kesa (tek tad se odradi izmena MovieState-a)
+        // Pokrecemo operaciju dovlacenja podataka sa servera, kada podaci stignu,
+        // bice sacuvani u bazi, tada ce se triggerovati observable na koji smo se pretplatili
+        // preko metode getAllMovies()
+    }
+
     private fun initRecyclers() {
         // category
         binding.categoryRv.layoutManager = LinearLayoutManager(this)
         categoryAdapter = CategoryAdapter(CategoryDiffCallback()) {
             binding.categoryRv.visibility = View.GONE
             binding.recipeRv.visibility = View.VISIBLE
+            searchQuery = it.title
+            mainViewModel.fetchRecipes(it.title)
+            mainViewModel.getRecipes(it.title)
+
         }
-        mainViewModel.fetchRecipes(it.title, "1")
-        mainViewModel.getRecipes(RecipeFilter(it.title))
         binding.categoryRv.adapter = categoryAdapter
+        categoryAdapter.submitList(categories)
     }
 
     private fun renderState(state: RecipeState) {
         when (state) {
+            is RecipeState.Success -> {
+                showProgressBar(false)
+            }
             is RecipeState.Error -> {
                 showProgressBar(false)
                 Toast.makeText(this, state.message, Toast.LENGTH_SHORT).show()
@@ -111,14 +138,16 @@ class MainActivity : AppCompatActivity() {
             is RecipeState.Loading -> {
                 showProgressBar(true)
             }
-            is RecipeState.Success -> {
-                showProgressBar(false)
-            }
+
         }
     }
 
     private fun showProgressBar(loading: Boolean) {
-
+        binding.categoryRv.isVisible = !loading
+        binding.recipeRv.isVisible = !loading
+        binding.loadingPb.isVisible = loading
+        binding.loadingPb.visibility = View.VISIBLE
     }
+
 
 }

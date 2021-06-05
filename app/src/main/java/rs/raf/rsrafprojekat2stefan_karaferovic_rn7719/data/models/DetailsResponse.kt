@@ -7,7 +7,7 @@ data class DetailsResponse(
     val id: String,
     val title: String,
     val ingredients: List<String>,
-    val imageUrl: String,
+    val imageUrl: String
 //    val socialUrl: String,
 //    val publisher: String,
 //    val publishedId: String,

@@ -61,6 +61,7 @@ class MainViewModel(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 {
+                    Timber.e("$it")
                     recipeState.value = RecipeState.Success(it) // recipes list
                 },
                 {

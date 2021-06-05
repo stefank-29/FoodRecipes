@@ -19,12 +19,12 @@ class RecipeRepositoryImpl(
             .getRecipes(recipe, "1")
             .doOnNext {
                 Timber.e("Insert into db")
-
+                Timber.e("entities: $it")
                 val entities = it.recipes.map {
                     RecipeEntity(
-                        it.id,
-                        it.title,
-                        it.imageUrl
+                        id = it.id,
+                        title = it.title,
+                        imageUrl = it.imageUrl
                     )
                 }
 
@@ -39,7 +39,7 @@ class RecipeRepositoryImpl(
 
     override fun getRecipes(recipe: String): Observable<List<Recipe>> {
         return localDataSource
-            .getRecipes(recipe)
+            .getRecipes()
             .map {
                 it.map {
                     Recipe(
