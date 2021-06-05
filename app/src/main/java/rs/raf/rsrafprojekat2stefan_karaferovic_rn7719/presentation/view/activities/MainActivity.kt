@@ -1,5 +1,6 @@
 package rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.presentation.view.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -7,12 +8,15 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.models.Category
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.databinding.ActivityMainBinding
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.presentation.contract.MainContract
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.presentation.view.recycler.adapter.CategoryAdapter
+import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.presentation.view.recycler.adapter.RecipeAdapter
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.presentation.view.recycler.diff.CategoryDiffCallback
+import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.presentation.view.recycler.diff.RecipeDiffCallback
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.presentation.view.states.RecipeState
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.presentation.viewmodel.MainViewModel
 import timber.log.Timber
@@ -24,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     private val mainViewModel: MainContract.ViewModel by viewModel<MainViewModel>()
 
     private lateinit var categoryAdapter: CategoryAdapter
+    private lateinit var recipeAdapter: RecipeAdapter
 
     private lateinit var searchQuery: String
 
@@ -78,6 +83,10 @@ class MainActivity : AppCompatActivity() {
         init()
     }
 
+    companion object {
+        const val DETAILS_KEY = "recipe"
+    }
+
     private fun init() {
         initView()
         initListeners()
@@ -120,12 +129,23 @@ class MainActivity : AppCompatActivity() {
         }
         binding.categoryRv.adapter = categoryAdapter
         categoryAdapter.submitList(categories)
+
+        // recipes
+        binding.recipeRv.layoutManager = LinearLayoutManager(this)
+        recipeAdapter = RecipeAdapter(RecipeDiffCallback()) {
+            val intent = Intent(this, DetailsActivity::class.java)
+            intent.putExtra(DETAILS_KEY, it.id)
+            startActivity(intent)
+        }
+        binding.recipeRv.adapter = recipeAdapter
+
     }
 
     private fun renderState(state: RecipeState) {
         when (state) {
             is RecipeState.Success -> {
                 showProgressBar(false)
+                recipeAdapter.submitList(state.recipes)
             }
             is RecipeState.Error -> {
                 showProgressBar(false)
@@ -143,10 +163,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showProgressBar(loading: Boolean) {
-        binding.categoryRv.isVisible = !loading
-        binding.recipeRv.isVisible = !loading
-        binding.loadingPb.isVisible = loading
-        binding.loadingPb.visibility = View.VISIBLE
+        if (loading) {
+            binding.categoryRv.visibility = View.GONE
+            binding.recipeRv.visibility = View.GONE
+            binding.loadingPb.visibility = View.VISIBLE
+        } else {
+            binding.recipeRv.visibility = View.VISIBLE
+            binding.loadingPb.visibility = View.GONE
+        }
     }
 
 
