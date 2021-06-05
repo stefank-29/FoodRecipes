@@ -4,4 +4,7 @@
     <string name="categories">Categories</string>
     <string name="search">Search</string>
     <string name="appName">FoodRecipes</string>
+    <string name="name">Name</string>
+    <string name="password">Password</string>
+    <string name="login">LogIn</string>
 </resources>
