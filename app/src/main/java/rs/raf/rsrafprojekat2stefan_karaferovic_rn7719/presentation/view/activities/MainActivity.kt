@@ -13,6 +13,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.withTimeout
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.R
@@ -36,8 +37,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var categoryAdapter: CategoryAdapter
     private lateinit var recipeAdapter: RecipeAdapter
-
-    private lateinit var searchQuery: String
 
     private val categories: List<Category> = listOf(
         Category(
@@ -121,7 +120,6 @@ class MainActivity : AppCompatActivity() {
         // category
         binding.categoryRv.layoutManager = LinearLayoutManager(this)
         categoryAdapter = CategoryAdapter(CategoryDiffCallback()) {
-            searchQuery = it.title
             mainViewModel.getRecipes(it.title)
             mainViewModel.fetchRecipes(it.title)
 
@@ -181,48 +179,41 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
 
-//        val menuItemSearch = menu?.findItem(R.id.search)
-//
-//        menuItemSearch?.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
-//
-//            override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
-//                categoryRecyclerView.visibility = View.GONE
-//                savedRecycleView.visibility = View.GONE
-//                recipeRecyclerView.visibility = View.VISIBLE
-//                return true
-//            }
-//
-//            override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
-//                categoryRecyclerView.visibility = View.VISIBLE
-//                savedRecycleView.visibility = View.GONE
-//                recipeRecyclerView.visibility = View.GONE
-//                recipeViewModel.deleteMeals()
-//                pageNum = 1
-//                return true
-//            }
-//
-//        })
+        val search = menu?.findItem(R.id.action_search)
 
-//        val searchView: SearchView = menuItemSearch?.actionView as SearchView
-//
-//        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-//
-//            override fun onQueryTextSubmit(text: String?): Boolean {
-//                if (text != null) {
-//                    search = text
-//                    recipeViewModel.deleteMeals()
-//                    recipeViewModel.getMeals(RecipeFilter(text))
-//                    recipeViewModel.fetchMealPage(text, "1")
-//                }
-//                return true
-//            }
-//
-//            override fun onQueryTextChange(text: String?): Boolean {
-//                return false
-//            }
-//
-//        })
-//
+        search?.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+
+            override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+                return true
+            }
+
+            override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+                binding.categoryRv.visibility = View.VISIBLE
+                binding.recipeRv.visibility = View.GONE
+                return true
+            }
+
+        })
+
+        val searchView: SearchView = search?.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+
+            override fun onQueryTextSubmit(text: String?): Boolean {
+                if (text != null) {
+                    mainViewModel.fetchRecipes(text)
+                    mainViewModel.getRecipes(text)
+                    searchView.clearFocus()
+                }
+                return true
+            }
+
+            override fun onQueryTextChange(text: String?): Boolean {
+                return false
+            }
+
+        })
+
 //        val menuItemCategories = menu.findItem(R.id.categories)
 //        val menuItemSaved = menu.findItem(R.id.savedMenus)
 //
