@@ -9,5 +9,8 @@ data class RecipeEntity(
     @PrimaryKey val id: String,
     val title: String,
     @ColumnInfo(name = "image_url")
-    val imageUrl: String
+    val imageUrl: String,
+    @ColumnInfo(name = "social_url")
+    val socialUrl: String,
+    val publisher: String
 )

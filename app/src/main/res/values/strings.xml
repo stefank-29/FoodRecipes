@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">rs.raf.projekat2.stefan_karaferovic_rn7719</string>
+    <string name="saved_menus">Saved menus</string>
+    <string name="categories">Categories</string>
+    <string name="search">Search</string>
+    <string name="appName">FoodRecipes</string>
 </resources>

@@ -24,7 +24,9 @@ class RecipeRepositoryImpl(
                     RecipeEntity(
                         id = it.id,
                         title = it.title,
-                        imageUrl = it.imageUrl
+                        imageUrl = it.imageUrl,
+                        socialUrl = it.socialUrl,
+                        publisher = it.publisher
                     )
                 }
 
@@ -46,7 +48,9 @@ class RecipeRepositoryImpl(
                         id = it.id,
                         title = it.title,
                         imageUrl = it.imageUrl,
-                        ingredients = listOf()
+                        ingredients = listOf(),
+                        socialUrl = it.socialUrl,
+                        publisher = it.publisher
                     )
                 }
             }

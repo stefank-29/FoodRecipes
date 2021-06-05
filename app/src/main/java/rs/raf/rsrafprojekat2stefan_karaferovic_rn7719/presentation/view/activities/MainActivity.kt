@@ -3,13 +3,19 @@ package rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.presentation.view.activit
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.withTimeout
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.R
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.models.Category
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.databinding.ActivityMainBinding
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.presentation.contract.MainContract
@@ -24,6 +30,7 @@ import timber.log.Timber
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+
 
     private val mainViewModel: MainContract.ViewModel by viewModel<MainViewModel>()
 
@@ -105,26 +112,18 @@ class MainActivity : AppCompatActivity() {
     private fun initObservers() {
         mainViewModel.recipeState.observe(this, Observer {
             Timber.e(it.toString())
-            renderState(it) // renderujem Ui
+            renderState(it)
         })
-        // Pravimo subscription kad observablu koji je vezan za getAll iz baze
-        // Na svaku promenu tabele, obserrvable ce emitovati na onNext sve elemente
-        // koji zadovoljavaju query
-        // mainViewModel.getRecipes()  // pokrenem fetchovanje iz kesa (tek tad se odradi izmena MovieState-a)
-        // Pokrecemo operaciju dovlacenja podataka sa servera, kada podaci stignu,
-        // bice sacuvani u bazi, tada ce se triggerovati observable na koji smo se pretplatili
-        // preko metode getAllMovies()
+
     }
 
     private fun initRecyclers() {
         // category
         binding.categoryRv.layoutManager = LinearLayoutManager(this)
         categoryAdapter = CategoryAdapter(CategoryDiffCallback()) {
-            binding.categoryRv.visibility = View.GONE
-            binding.recipeRv.visibility = View.VISIBLE
             searchQuery = it.title
-            mainViewModel.fetchRecipes(it.title)
             mainViewModel.getRecipes(it.title)
+            mainViewModel.fetchRecipes(it.title)
 
         }
         binding.categoryRv.adapter = categoryAdapter
@@ -152,8 +151,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, state.message, Toast.LENGTH_SHORT).show()
             }
             is RecipeState.DataFetched -> {
-                showProgressBar(false)
-                Toast.makeText(this, "Data fetched from server", Toast.LENGTH_LONG).show()
+                showProgressBar(true)
             }
             is RecipeState.Loading -> {
                 showProgressBar(true)
@@ -164,13 +162,90 @@ class MainActivity : AppCompatActivity() {
 
     private fun showProgressBar(loading: Boolean) {
         if (loading) {
+            binding.loadingPb.visibility = View.VISIBLE
             binding.categoryRv.visibility = View.GONE
             binding.recipeRv.visibility = View.GONE
-            binding.loadingPb.visibility = View.VISIBLE
+
+
         } else {
-            binding.recipeRv.visibility = View.VISIBLE
-            binding.loadingPb.visibility = View.GONE
+            Handler().postDelayed({ // flicker
+                binding.categoryRv.visibility = View.GONE
+                binding.recipeRv.visibility = View.VISIBLE
+                binding.loadingPb.visibility = View.GONE
+            }, 1000)
+
         }
+
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+
+//        val menuItemSearch = menu?.findItem(R.id.search)
+//
+//        menuItemSearch?.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+//
+//            override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+//                categoryRecyclerView.visibility = View.GONE
+//                savedRecycleView.visibility = View.GONE
+//                recipeRecyclerView.visibility = View.VISIBLE
+//                return true
+//            }
+//
+//            override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+//                categoryRecyclerView.visibility = View.VISIBLE
+//                savedRecycleView.visibility = View.GONE
+//                recipeRecyclerView.visibility = View.GONE
+//                recipeViewModel.deleteMeals()
+//                pageNum = 1
+//                return true
+//            }
+//
+//        })
+
+//        val searchView: SearchView = menuItemSearch?.actionView as SearchView
+//
+//        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+//
+//            override fun onQueryTextSubmit(text: String?): Boolean {
+//                if (text != null) {
+//                    search = text
+//                    recipeViewModel.deleteMeals()
+//                    recipeViewModel.getMeals(RecipeFilter(text))
+//                    recipeViewModel.fetchMealPage(text, "1")
+//                }
+//                return true
+//            }
+//
+//            override fun onQueryTextChange(text: String?): Boolean {
+//                return false
+//            }
+//
+//        })
+//
+//        val menuItemCategories = menu.findItem(R.id.categories)
+//        val menuItemSaved = menu.findItem(R.id.savedMenus)
+//
+//        menuItemCategories.setOnMenuItemClickListener {
+//            recipeRecyclerView.visibility = View.GONE
+//            savedRecycleView.visibility = View.GONE
+//            categoryRecyclerView.visibility = View.VISIBLE
+//            recipeViewModel.deleteMeals()
+//            pageNum = 1
+//            true
+//        }
+//
+//        menuItemSaved.setOnMenuItemClickListener {
+//            recipeViewModel.getSavedMeals()
+//            recipeRecyclerView.visibility = View.GONE
+//            categoryRecyclerView.visibility = View.GONE
+//            savedRecycleView.visibility = View.VISIBLE
+//            recipeViewModel.deleteMeals()
+//            pageNum = 1
+//            true
+//        }
+
+        return true
     }
 
 
