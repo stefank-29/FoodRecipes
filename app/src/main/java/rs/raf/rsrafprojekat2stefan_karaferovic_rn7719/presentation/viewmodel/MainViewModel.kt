@@ -1,14 +1,11 @@
 package rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.presentation.viewmodel
 
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
-import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.models.Recipe
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.models.Resource
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.repositories.RecipeRepository
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.presentation.contract.MainContract
@@ -102,7 +99,7 @@ class MainViewModel(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 {
-                    detailsState.value = DetailsState.Success(it)
+                    detailsState.value = DetailsState.Success(it) // recipe details
                 },
                 {
                     detailsState.value =

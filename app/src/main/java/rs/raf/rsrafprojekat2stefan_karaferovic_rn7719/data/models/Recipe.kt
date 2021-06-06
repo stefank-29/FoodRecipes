@@ -1,5 +1,7 @@
 package rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.models
 
+import java.io.Serializable
+
 
 data class Recipe(
     val id: String,
@@ -8,4 +10,4 @@ data class Recipe(
     val ingredients: List<String>,
     val socialUrl: String,
     val publisher: String
-)
+) : Serializable

@@ -131,7 +131,7 @@ class MainActivity : AppCompatActivity() {
         binding.recipeRv.layoutManager = LinearLayoutManager(this)
         recipeAdapter = RecipeAdapter(RecipeDiffCallback()) {
             val intent = Intent(this, DetailsActivity::class.java)
-            intent.putExtra(DETAILS_KEY, it.id)
+            intent.putExtra(DETAILS_KEY, it)
             startActivity(intent)
         }
         binding.recipeRv.adapter = recipeAdapter
@@ -170,7 +170,7 @@ class MainActivity : AppCompatActivity() {
                 binding.categoryRv.visibility = View.GONE
                 binding.recipeRv.visibility = View.VISIBLE
                 binding.loadingPb.visibility = View.GONE
-            }, 1000)
+            }, 2000)
 
         }
 
@@ -214,27 +214,20 @@ class MainActivity : AppCompatActivity() {
 
         })
 
-//        val menuItemCategories = menu.findItem(R.id.categories)
-//        val menuItemSaved = menu.findItem(R.id.savedMenus)
-//
-//        menuItemCategories.setOnMenuItemClickListener {
-//            recipeRecyclerView.visibility = View.GONE
-//            savedRecycleView.visibility = View.GONE
-//            categoryRecyclerView.visibility = View.VISIBLE
-//            recipeViewModel.deleteMeals()
-//            pageNum = 1
-//            true
-//        }
-//
-//        menuItemSaved.setOnMenuItemClickListener {
-//            recipeViewModel.getSavedMeals()
-//            recipeRecyclerView.visibility = View.GONE
-//            categoryRecyclerView.visibility = View.GONE
-//            savedRecycleView.visibility = View.VISIBLE
-//            recipeViewModel.deleteMeals()
-//            pageNum = 1
-//            true
-//        }
+        val categories = menu.findItem(R.id.categories)
+        val itemsSaved = menu.findItem(R.id.savedMenus)
+
+        categories.setOnMenuItemClickListener {
+            binding.categoryRv.visibility = View.VISIBLE
+            binding.recipeRv.visibility = View.GONE
+            true
+        }
+
+        itemsSaved.setOnMenuItemClickListener {
+            binding.categoryRv.visibility = View.GONE
+            binding.recipeRv.visibility = View.GONE
+            true
+        }
 
         return true
     }
