@@ -3,6 +3,10 @@ package rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.presentation.view.activit
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.view.View
+import android.widget.TextView
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -10,7 +14,10 @@ import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.data.models.Recipe
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.databinding.ActivityDetailsBinding
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.databinding.ActivityMainBinding
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.presentation.contract.MainContract
+import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.presentation.view.states.DetailsState
+import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.presentation.view.states.RecipeState
 import rs.raf.rsrafprojekat2stefan_karaferovic_rn7719.presentation.viewmodel.MainViewModel
+import timber.log.Timber
 import kotlin.math.round
 
 class DetailsActivity : AppCompatActivity() {
@@ -27,8 +34,8 @@ class DetailsActivity : AppCompatActivity() {
         binding = ActivityDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         recipe = intent.getSerializableExtra(MainActivity.DETAILS_KEY) as Recipe
-        mainViewModel.getDetails(recipe.id)
         mainViewModel.fetchDetails(recipe.id)
+        mainViewModel.getDetails(recipe.id)
         init()
     }
 
@@ -47,15 +54,54 @@ class DetailsActivity : AppCompatActivity() {
 
     private fun initListeners() {
         binding.saveBtn.setOnClickListener {
-            val intent = Intent(this, SaveMealActivity::class.java)
-            intent.putExtra(MainActivity.MESSAGE_KEY_RECIPE, recipe)
-            startActivity(intent)
+
         }
     }
 
     private fun initObservers() {
         mainViewModel.detailsState.observe(this, Observer {
-            renderIngredientState(it)
+            renderState(it)
         })
     }
+
+    private fun renderState(state: DetailsState) {
+        when (state) {
+            is DetailsState.Success -> {
+                showProgressBar(false)
+                Timber.e(state.details.ingredients.toString())
+                for (ingredient in state.details.ingredients) {
+                    val ingredientTv = TextView(this)
+                    ingredientTv.text = ingredient
+                    binding.ingredientsLinear.addView(ingredientTv)
+
+                }
+            }
+            is DetailsState.Error -> {
+                showProgressBar(false)
+                Toast.makeText(this, state.message, Toast.LENGTH_SHORT).show()
+            }
+            is DetailsState.DataFetched -> {
+                showProgressBar(true)
+            }
+            is DetailsState.Loading -> {
+                showProgressBar(true)
+            }
+
+        }
+    }
+
+    private fun showProgressBar(loading: Boolean) {
+        if (loading) {
+            binding.loadingProgress.visibility = View.VISIBLE
+            binding.ingredientsSv.visibility = View.GONE
+
+
+        } else {
+            Handler().postDelayed({ // flicker
+                binding.loadingProgress.visibility = View.GONE
+                binding.ingredientsSv.visibility = View.VISIBLE
+            }, 1000)
+        }
+    }
+
 }

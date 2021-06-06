@@ -59,10 +59,10 @@ class RecipeRepositoryImpl(
             .getRecipeDetails(recipeId)
             .doOnNext {
                 val detailsEntity = DetailsEntity(
-                    id = it.id,
-                    title = it.title,
-                    imageUrl = it.imageUrl,
-                    ingredients = it.ingredients
+                    id = it.recipe.id,
+                    title = it.recipe.title,
+                    imageUrl = it.recipe.imageUrl,
+                    ingredients = it.recipe.ingredients
                 )
                 localDataSource.insertRecipeDetails(detailsEntity).blockingAwait()
             }

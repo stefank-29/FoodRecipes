@@ -78,6 +78,7 @@ class MainViewModel(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 {
+                    Timber.e("aaaa: $it")
                     when (it) {
                         is Resource.Loading -> detailsState.value = DetailsState.Loading
                         is Resource.Success -> detailsState.value = DetailsState.DataFetched
@@ -104,7 +105,6 @@ class MainViewModel(
                 {
                     detailsState.value =
                         DetailsState.Error("Error during getting data from database")
-                    Timber.e(it)
                 }
             )
         subscriptions.add(subscription)

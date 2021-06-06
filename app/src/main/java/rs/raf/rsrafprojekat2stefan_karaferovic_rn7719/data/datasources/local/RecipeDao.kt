@@ -30,7 +30,7 @@ abstract class RecipeDao {
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insertRecipeDetails(ingredient: DetailsEntity): Completable
+    abstract fun insertRecipeDetails(details: DetailsEntity): Completable
 
     @Query("SELECT * FROM details WHERE id LIKE :recipeId")
     abstract fun getRecipeDetails(recipeId: String): Observable<DetailsEntity>
